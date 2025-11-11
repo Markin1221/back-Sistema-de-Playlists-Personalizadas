@@ -1,0 +1,61 @@
+from django.urls import path
+from django.urls import include
+
+from . import views
+
+app_name = 'forum'
+urlpatterns = [
+    # ex: /forum/
+    path("", views.MainView.as_view(), name="index"),
+    # ex: /forum/5/
+    path("<int:pergunta_id>/", views.PerguntaView.as_view(), name="detalhe"),
+    # ex: /forum/5/voto/
+    path("<int:resposta_id>/voto/", views.VotoView.as_view(), name="voto"),
+    # ex: /forum/inserir/
+    path("inserir/", views.InserirPerguntaView.as_view(), name="inserir_pergunta"),
+    # ex: /forum/5/resposta/
+    path("<int:pergunta_id>/resposta/",
+         views.InserirRespostaView.as_view(), name="inserir_resposta"),
+    path('forum/', include('forum.urls')),
+]
+
+///////////////////////////////////
+
+from django.urls import path
+from . import views
+
+app_name = 'financas'
+
+urlpatterns = [
+    # Página inicial / dashboard
+    path('', views.DashboardView.as_view(), name='dashboard'),
+
+    # Login e cadastro (mesma página)
+    path('login/', views.LoginCadastroView.as_view(), name='login_cadastro'),
+
+    # Contas
+    path('contas/', views.ListaContasView.as_view(), name='listar_contas'),
+    path('contas/nova/', views.NovaContaView.as_view(), name='nova_conta'),
+    path('contas/<int:conta_id>/editar/', views.EditarContaView.as_view(), name='editar_conta'),
+    path('contas/<int:conta_id>/excluir/', views.ExcluirContaView.as_view(), name='excluir_conta'),
+
+    # Transações
+    path('transacoes/', views.ListaTransacoesView.as_view(), name='listar_transacoes'),
+    path('transacoes/nova/', views.NovaTransacaoView.as_view(), name='nova_transacao'),
+    path('transacoes/<int:transacao_id>/detalhe/', views.DetalheTransacaoView.as_view(), name='detalhe_transacao'),
+
+    # Categorias
+    path('categorias/', views.ListaCategoriasView.as_view(), name='listar_categorias'),
+    path('categorias/nova/', views.NovaCategoriaView.as_view(), name='nova_categoria'),
+
+    # Metas
+    path('metas/', views.ListaMetasView.as_view(), name='listar_metas'),
+    path('metas/nova/', views.NovaMetaView.as_view(), name='nova_meta'),
+
+    # Orçamentos
+    path('orcamentos/', views.ListaOrcamentosView.as_view(), name='listar_orcamentos'),
+    path('orcamentos/novo/', views.NovoOrcamentoView.as_view(), name='novo_orcamento'),
+
+    # Logout
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+]

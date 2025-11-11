@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 class dashBoardView(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         
         contas = conta.objects.filter(id_usuario=usuario)
@@ -29,7 +29,7 @@ class dashBoardView(View):
 class contasView(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         contas = conta.objects.filter(id_usuario=usuario)
         
@@ -41,7 +41,7 @@ class contasView(View):
 class contaDetailView(View):
     def get(self, request, conta_id):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         conta_obj = get_object_or_404(conta, id_conta=conta_id, id_usuario=usuario)
         transacaoes = transacao.objects.filter(id_conta=conta_obj).order_by('-data_transacao')
@@ -54,12 +54,12 @@ class contaDetailView(View):
 class criarContasview(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         return render(request, 'financas/criar_conta.html')
     
     def post(self, request):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         nome_conta = request.POST.get('nome_conta')
         tipo = request.POST.get('tipo')
@@ -78,13 +78,12 @@ class criarContasview(View):
             limite_credito=limite_credito
         )
         nova_conta.save()
-        return redirect(reverse('contas'))
+        return redirect(reverse('criar_conta'))
     
-
 class NovaTransicaoview(View):
     def get(self, request, conta_id):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         conta_obj = get_object_or_404(conta, id_conta=conta_id, id_usuario=usuario)
         categorias = categoria.objects.filter(id_usuario=usuario)
@@ -96,7 +95,7 @@ class NovaTransicaoview(View):
     
     def post(self, request, conta_id):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         conta_obj = get_object_or_404(conta, id_conta=conta_id, id_usuario=usuario)
         
@@ -123,19 +122,18 @@ class NovaTransicaoview(View):
 class gastosGeraisview(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         transacoes = transacao.objects.filter(id_conta__id_usuario=usuario).order_by('-data_transacao')
         contexto = {
             'transacoes': transacoes,
         }
         return render(request, 'financas/gastos_gerais.html', contexto)
-    
-    
+     
 class gastosCategoriaView(View):
     def get(self, request, categoria_id):
         if not request.user.is_authenticated:
-            return redirect("login")
+            return redirect("login_cadastro")
         usuario = request.user
         categoria_obj = get_object_or_404(categoria, id_categoria=categoria_id, id_usuario=usuario)
         
@@ -146,13 +144,8 @@ class gastosCategoriaView(View):
         }
         return render(request, 'financas/gastos_categoria.html', contexto)
         
-
-
 class LoginCadastroView(View):
     
-    
-    
-#falta agora criar as views de preenchimento de usuario, onde voce bota renda mensal e variavel tambem
     def get(self, request):
         # só mostra o HTML
         return render(request, 'financas/login_cadastro.html')
@@ -207,3 +200,66 @@ class LoginCadastroView(View):
         else:
             messages.error(request, "Ação inválida.")
             return redirect('login_cadastro')
+#nao falta mais nada eu acho :))))
+
+class complementoUsuarioView(View):
+    def get(self,request):
+        if not request.user.is_authenticated:
+            return redirect("login_cadastro")
+        return render(request, 'financas/usuario.html')
+    
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return redirect("login_cadastro")
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        usuario = request.user
+        renda_mensal = request.POST.get('renda_mensal') or 0
+        despesas_variaveis = request.POST.get('despesas_variaveis') or 0
+        
+        usuario.renda_mensal = renda_mensal
+        usuario.despesas_variaveis = despesas_variaveis
+        usuario.email = email
+        usuario.nome = nome
+        usuario.save()
+        
+        return redirect(reverse('dashboard'))
+    
+class criarMetasView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect("login_cadastro")
+        return render(request, 'financas/criar_meta.html')
+    
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return redirect("login_cadastro")
+        usuario = request.user
+        nome_meta = request.POST.get('titulo')
+        descricao = request.POST.get('descricao')
+        valor_atual = request.POST.get('valor_atual')
+        valor_objetivo = request.POST.get('valor_objetivo')
+        data_alvo = request.POST.get('data_alvo')
+        
+        nova_meta = meta(
+            id_usuario=usuario,
+            nome=nome_meta,
+            descricao=descricao,
+            valor_atual = valor_atual,
+            valor_objetivo=valor_objetivo,
+            data_alvo=data_alvo,
+            concluidas=False
+        )
+        nova_meta.save()
+        return redirect(reverse('ver_metas'))  
+    
+class verMetasView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect("login_cadastro")
+        usuario = request.user
+        metas = meta.objects.filter(id_usuario=usuario)
+        contexto = {
+            'metas': metas,
+        }
+        return render(request, 'financas/ver_metas.html', contexto)  
