@@ -5,7 +5,9 @@ from . import views
 app_name = 'financas'
 
 urlpatterns = [
-    path('', views.dashBoardView.as_view(), name='dashboard'),
+    path('', views.MainView.as_view(), name='index'),  
+    
+    path('dashBoard/', views.dashBoardView.as_view(), name='dashboard'),
     
     path('login/', views.LoginCadastroView.as_view(), name='login_cadastro'),
     
@@ -19,7 +21,7 @@ urlpatterns = [
     
     path('gastos_gerais/<int:id_usuario>/', views.gastosGeraisview.as_view(), name='gastos_gerais'),
     
-    path('gastos_categoria/<int:id_usuario>/<int:id_categoria', views.gastosCategoriaView.as_view(), name='gastos_categoria'),
+    path('gastos_categoria/<int:id_usuario>/<int:id_categoria>', views.gastosCategoriaView.as_view(), name='gastos_categoria'),
     
     path('completar_perfil/<int:id_usuario>/', views.complementoUsuarioView.as_view(), name='completar_perfil'),
     

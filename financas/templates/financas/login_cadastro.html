@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+</head>
+<body>
+    
+    <div>
+        <form action="{% url 'financas:login_cadastro' %}" method="post">
+            {% csrf_token %}
+            <h3>Login</h3>
+
+            <label>email:</label>
+            <input type="text" name="email">
+
+            <label>Senha:</label>
+            <input type="password" name="senha">
+
+            <button type="submit" name="acao" value="login">Entrar</button>
+        </form>
+
+    </div>
+
+    <!-- essa parte de cima é o login-->
+     <div>
+        <form action="{% url 'financas:login_cadastro' %}" method="post">
+            {% csrf_token %}
+            <h3>cadastrar</h3>
+            
+            <label>Nome:</label>
+            <input type="text" name="nome_cadastro">
+
+            <label>E-mail:</label>
+            <input type="email" name="email_cadastro">
+
+            <label>Senha:</label>
+            <input type="password" name="senha_cadastro">
+
+            <button type="submit" name="acao" value="cadastro">Cadastrar</button>
+        </form>
+     </div>
+</body>
+</html>
