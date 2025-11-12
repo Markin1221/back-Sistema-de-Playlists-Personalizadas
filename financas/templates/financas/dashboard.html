@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard</title>
+</head>
+<body>
+    <div class="main">
+        <h1>Bem-vindo ao Dashboard</h1>
+        <div class="caixa_valores">
+            <div class="valor_entrada">
+                <h3>Entradas</h3>
+                <p>R$ {{ entradas }}</p>
+            </div>
+            <div class="valor_saida">
+                <h3>Saídas</h3>
+                <p>R$ {{ saidas }}</p>
+            </div>
+            <div class="valor_saldo">
+                <h3>Saldo</h3>
+                <p>R$ {{ saldo }}</p>
+            </div>
+            {% for transicao in transicoes %}
+            <div>
+                <h3>Total de Transações</h3>
+                <p>{{ transacoes.valor }}</p>
+            </div>
+            {% empty %}
+            <div>
+                <h3>Total de Transações</h3>
+                <p>0</p>
+            </div>
+            {% endfor %}    
+        </div>
+        <div class="contas">
+            <h2>Minhas Contas</h2>
+            <ul>
+                 {% for conta in contas %}
+              <li>{{ conta.nome }} - Saldo: R$ {{ conta.saldo }}</li>
+                {% empty %}
+             <li>Nenhuma conta cadastrada.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="metas">
+            <h2>metas</h2>
+            {% for meta in metas %}
+            <li> {{metas.nome_meta}} -- {{metas.descricao}}</li>
+            <!--na verdade isso daqui vai virar uma div com uma caixinha que em cima fica nome
+             e em baixo descriçao-->
+             {% empty %}
+             <li>Nenhuma conta cadastrada.</li>
+                {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

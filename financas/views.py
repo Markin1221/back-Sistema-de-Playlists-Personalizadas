@@ -30,12 +30,12 @@ class dashBoardView(View):
 
         contas = conta.objects.filter(id_usuario=usuario)
         metas = meta.objects.filter(id_usuario=usuario, concluida=False)
-        ultimas_transacoes = transacao.objects.filter(id_conta__id_usuario=usuario).order_by('-data_transacao')[:5]
+        transacoes = transacao.objects.filter(id_conta__id_usuario=usuario).order_by('-data_transacao')[:5]
 
         contexto = {
             'contas': contas,
             'metas': metas,
-            'ultimas_transacoes': ultimas_transacoes,
+            'ultimas_transacoes': transacoes,
         }
         return render(request, 'financas/dashboard.html', contexto)
 
