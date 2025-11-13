@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Completar Perfil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 2rem auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        form label {
+            display: block;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        form button {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 12px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        form button:hover {
+            background-color: #219150;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'financas:dashboard' %}">
+            <button>
+                ←<br>Dashboard
+            </button>
+        </a>
+        <h1>Completar Perfil do Usuário</h1>
+    </header>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <h2>Atualize seus dados</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" value="{{ usuario.nome }}" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+
+            <label for="renda_mensal">Renda Mensal:</label>
+            <input type="number" step="0.01" id="renda_mensal" name="renda_mensal" value="{{ usuario.renda_mensal|default_if_none:'' }}">
+
+            <label for="despesas_variaveis">Renda Variável / Despesas Variáveis:</label>
+            <input type="number" step="0.01" id="despesas_variaveis" name="despesas_variaveis" value="{{ usuario.renda_variavel|default_if_none:'0.00' }}">
+
+            <button type="submit">Salvar Dados</button>
+        </form>
+    </div>
+</body>
+</html>

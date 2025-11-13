@@ -122,6 +122,11 @@
 </head>
 <body>
     <header>
+        <a href="{% url 'financas:dashboard' %}">
+            <button>
+                ←<br>Dashboard
+            </button>
+        </a>
         <h1>Categorias de {{ usuario.username }}</h1>
         <button id="abrirModal">+ Nova Categoria</button>
     </header>

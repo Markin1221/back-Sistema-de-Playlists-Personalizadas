@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Metas de {{ usuario.nome }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f6f8fa; margin: 0; padding: 0; }
+        header { background-color: #2c3e50; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; }
+        button { background-color: #27ae60; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        button:hover { background-color: #219150; }
+        .container { padding: 2rem; max-width: 900px; margin: auto; }
+        table { width: 100%; background-color: white; border-collapse: collapse; box-shadow: 0 0 6px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        /* === MODAL === */
+        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fff; margin: 10% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; position: relative; }
+        .close { position: absolute; right: 16px; top: 12px; font-size: 22px; color: #333; cursor: pointer; }
+        form input, form select, form textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        form button { background-color: #3498db; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'financas:dashboard' %}">
+            <button>
+                ←<br>Dashboard
+            </button>
+        </a>
+        
+        <h1>Metas de {{ usuario.nome }}</h1>
+        <button id="abrirModal">+ Criar Meta</button>
+    </header>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Meta</th>
+                    <th>Descrição</th>
+                    <th>Atual</th>
+                    <th>Objetivo</th>
+                    <th>Data Alvo</th>
+                    <th>Concluída</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in metas %}
+                    <tr>
+                        <td>{{ m.nome_meta }}</td>
+                        <td>{{ m.descricao }}</td>
+                        <td>R$ {{ m.valor_atual }}</td>
+                        <td>R$ {{ m.valor_objetivo }}</td>
+                        <td>{{ m.data_alvo|date:"d/m/Y" }}</td>
+                        <td>{% if m.concluida %}Sim{% else %}Não{% endif %}</td>
+                        <td>
+                            <button class="abrirAdicionar" data-meta-id="{{ m.id_meta }}" data-meta-nome="{{ m.nome_meta }}">Adicionar Dinheiro</button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7" style="text-align:center;">Nenhuma meta criada ainda.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- === MODAL CRIAR META === -->
+    <div id="modalMeta" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fecharModal">&times;</span>
+            <h2>Criar Nova Meta</h2>
+            <form method="post" action="{% url 'financas:criar_metas' usuario.id_usuario %}">
+                {% csrf_token %}
+                <label>Título da Meta:</label>
+                <input type="text" name="titulo" required>
+                <label>Descrição:</label>
+                <textarea name="descricao" rows="3"></textarea>
+                <label>Valor Atual:</label>
+                <input type="number" name="valor_atual" step="0.01" required>
+                <label>Valor Objetivo:</label>
+                <input type="number" name="valor_objetivo" step="0.01" required>
+                <label>Data Alvo:</label>
+                <input type="date" name="data_alvo" required>
+                <button type="submit">Salvar Meta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- === MODAL ADICIONAR DINHEIRO === -->
+    <div id="modalAdicionar" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fecharAdicionar">&times;</span>
+            <h2 id="tituloMetaAdicionar">Adicionar Dinheiro</h2>
+            <form method="post" action="{% url 'financas:ver_metas' usuario.id_usuario %}">
+                {% csrf_token %}
+                <input type="hidden" name="meta_id" id="metaIdInput">
+                <label>Valor:</label>
+                <input type="number" name="valor" step="0.01" required>
+                <label>Conta de Saída:</label>
+                <select name="conta_id" required>
+                    {% for c in contas %}
+                        <option value="{{ c.id_conta }}">{{ c.nome_conta }} (Saldo: R$ {{ c.saldo_inicial }})</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Adicionar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal criar meta
+        const modal = document.getElementById("modalMeta");
+        const abrir = document.getElementById("abrirModal");
+        const fechar = document.getElementById("fecharModal");
+        abrir.onclick = () => modal.style.display = "block";
+        fechar.onclick = () => modal.style.display = "none";
+
+        // Modal adicionar dinheiro
+        const modalAdd = document.getElementById("modalAdicionar");
+        const fecharAdd = document.getElementById("fecharAdicionar");
+        const btnsAdd = document.querySelectorAll(".abrirAdicionar");
+        const metaIdInput = document.getElementById("metaIdInput");
+        const tituloMetaAdicionar = document.getElementById("tituloMetaAdicionar");
+
+        btnsAdd.forEach(btn => {
+            btn.onclick = () => {
+                const metaId = btn.getAttribute("data-meta-id");
+                const metaNome = btn.getAttribute("data-meta-nome");
+                metaIdInput.value = metaId;
+                tituloMetaAdicionar.textContent = "Adicionar Dinheiro na meta '" + metaNome + "'";
+                modalAdd.style.display = "block";
+            };
+        });
+
+        fecharAdd.onclick = () => modalAdd.style.display = "none";
+        window.onclick = e => {
+            if (e.target === modal || e.target === modalAdd) {
+                modal.style.display = "none";
+                modalAdd.style.display = "none";
+            }
+        };
+    </script>
+</body>
+</html>

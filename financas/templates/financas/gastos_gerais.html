@@ -142,6 +142,11 @@
 </head>
 <body>
     <header>
+        <a href="{% url 'financas:dashboard' %}">
+            <button>
+                ←<br>Dashboard
+            </button>
+        </a>
         <h1>Gastos Gerais de {{ usuario.username }}</h1>
         <button id="abrirModal">+ Novo Gasto</button>
     </header>

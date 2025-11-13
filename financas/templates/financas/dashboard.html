@@ -76,9 +76,12 @@
 
         <!-- Botões de navegação -->
         <div style="margin-bottom: 20px;">
-            <a href="{% url 'financas:gastos_gerais' usuario.id_usuario %}" class="btn-gastos">Gastos Gerais</a>
-            <a href="{% url 'financas:gastos_categoria' usuario.id_usuario %}">Ver gastos</a>
+            <a href="{% url 'financas:gastos_gerais' usuario.id_usuario %}" class="btn-categoria">Gastos Gerais</a>
+            <a href="{% url 'financas:gastos_categoria' usuario.id_usuario %}" class="btn-categoria">Ver gastos</a>
             <a href="{% url 'financas:contas' usuario.id_usuario %}" class="btn-categoria">Minhas Contas</a>
+            <a href="{% url 'financas:completar_perfil' usuario.id_usuario %}" class="btn-categoria">Completar Perfil</a>
+            <a href="{% url 'financas:ver_metas' usuario.id_usuario %}" class="btn-categoria">Minhas Metas</a>
+
 
 
         </div>

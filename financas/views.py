@@ -142,7 +142,7 @@ class contaDetailView(View):
         }
 
         return render(request, 'financas/conta_detail.html', contexto)
-
+#esta porra tem template
 
 class criarContasview(View):
     def get(self, request, id_usuario):
@@ -173,7 +173,7 @@ class criarContasview(View):
             limite_credito=limite_credito
         )
         return redirect('financas:dashboard')
-
+#esta porra tem template
 
 class contasView(View):
     def get(self, request, id_usuario):
@@ -187,7 +187,7 @@ class contasView(View):
             'usuario': usuario  # <<< Adicione isso
         }
         return render(request, 'financas/contas.html', contexto)
-
+#esta porra tem template
 
 class NovaTransicaoview(View):
     def get(self, request, id_usuario, id_conta):
@@ -237,6 +237,8 @@ class NovaTransicaoview(View):
 
 #esta porra tem template
 
+from django.db.models import Sum
+
 class gastosGeraisview(View):
     def get(self, request, id_usuario):
         usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
@@ -244,12 +246,25 @@ class gastosGeraisview(View):
         contas = conta.objects.filter(id_usuario=usuario)
         categorias = categoria.objects.all()
 
+        # Calcula totais
+        total_entradas = transacoes.filter(tipo='entrada').aggregate(total=Sum('valor'))['total'] or 0
+        total_saidas = transacoes.filter(tipo='saida').aggregate(total=Sum('valor'))['total'] or 0
+        saldo_final = total_entradas - total_saidas
+
+        # Cor do saldo
+        cor_saldo = 'red' if saldo_final < 0 else 'green'
+
         return render(request, 'financas/gastos_gerais.html', {
             'usuario': usuario,
             'transacoes': transacoes,
             'contas': contas,
             'categorias': categorias,
+            'total_entradas': total_entradas,
+            'total_saidas': total_saidas,
+            'saldo_final': saldo_final,
+            'cor_saldo': cor_saldo,
         })
+
 #esta porra tem template
 
 class gastosCategoriaView(View):
@@ -320,15 +335,15 @@ class CriarCategoriaView(View):
 #esta porra tem template    
 
 class complementoUsuarioView(View):
-    def get(self, request):
+    def get(self, request, id_usuario):
         usuario = get_usuario_logado(request)
-        if not usuario:
+        if not usuario or usuario.id_usuario != id_usuario:
             return redirect("financas:login_cadastro")
-        return render(request, 'financas/usuario.html', {'usuario': usuario})
+        return render(request, 'financas/completar_perfil.html', {'usuario': usuario})
 
-    def post(self, request):
+    def post(self, request, id_usuario):
         usuario = get_usuario_logado(request)
-        if not usuario:
+        if not usuario or usuario.id_usuario != id_usuario:
             return redirect("financas:login_cadastro")
 
         usuario.nome = request.POST.get('nome')
@@ -339,37 +354,108 @@ class complementoUsuarioView(View):
 
         messages.success(request, "Dados atualizados com sucesso!")
         return redirect('financas:dashboard')
-
+#esta porra tem template 
 
 class criarMetasView(View):
-    def get(self, request):
-        usuario = get_usuario_logado(request)
-        if not usuario:
-            return redirect("financas:login_cadastro")
-        return render(request, 'financas/criar_meta.html')
+    def get(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
 
-    def post(self, request):
-        usuario = get_usuario_logado(request)
-        if not usuario:
+        # Garantir que só o usuário logado acesse
+        usuario_logado = get_usuario_logado(request)
+        if not usuario_logado or usuario_logado.id_usuario != usuario.id_usuario:
+            return redirect("financas:login_cadastro")
+
+        return render(request, 'financas/criar_meta.html', {'usuario': usuario})
+
+    def post(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
+
+        usuario_logado = get_usuario_logado(request)
+        if not usuario_logado or usuario_logado.id_usuario != usuario.id_usuario:
             return redirect("financas:login_cadastro")
 
         meta.objects.create(
             id_usuario=usuario,
             nome_meta=request.POST.get('titulo'),
             descricao=request.POST.get('descricao'),
-            valor_atual=request.POST.get('valor_atual'),
-            valor_objetivo=request.POST.get('valor_objetivo'),
+            valor_atual=request.POST.get('valor_atual') or 0,
+            valor_objetivo=request.POST.get('valor_objetivo') or 0,
             data_alvo=request.POST.get('data_alvo'),
             concluida=False
         )
-        return redirect('ver_metas')
 
+        # Redireciona passando o id_usuario
+        return redirect('financas:ver_metas', id_usuario=usuario.id_usuario)
+#esta porra tem template 
 
 class verMetasView(View):
-    def get(self, request):
-        usuario = get_usuario_logado(request)
-        if not usuario:
+    def get(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
+
+        usuario_logado = get_usuario_logado(request)
+        if not usuario_logado or usuario_logado.id_usuario != usuario.id_usuario:
             return redirect("financas:login_cadastro")
 
         metas = meta.objects.filter(id_usuario=usuario)
-        return render(request, 'financas/ver_metas.html', {'metas': metas})
+        contas = conta.objects.filter(id_usuario=usuario)
+        return render(request, 'financas/ver_metas.html', {
+            'metas': metas,
+            'usuario': usuario,
+            'contas': contas
+        })
+
+    def post(self, request, id_usuario):
+        usuario = get_object_or_404(Usuario, id_usuario=id_usuario)
+        usuario_logado = get_usuario_logado(request)
+        if not usuario_logado or usuario_logado.id_usuario != usuario.id_usuario:
+            return redirect("financas:login_cadastro")
+
+        meta_id = request.POST.get('meta_id')
+        conta_id = request.POST.get('conta_id')
+        valor = request.POST.get('valor')
+
+        # Valida e converte valor
+        try:
+            valor = Decimal(valor)
+            if valor <= 0:
+                raise ValueError("Valor deve ser positivo.")
+        except:
+            messages.error(request, "Valor inválido.")
+            return redirect('financas:ver_metas', id_usuario=id_usuario)
+
+        # Busca meta e conta
+        meta_obj = get_object_or_404(meta, id_meta=meta_id, id_usuario=usuario)
+        conta_obj = get_object_or_404(conta, id_conta=conta_id, id_usuario=usuario)
+
+        # Categoria para metas
+        categoria_meta, created = categoria.objects.get_or_create(
+            id_usuario=usuario,
+            nome_categoria="Meta",
+            defaults={'tipo': 'saida', 'descricao': 'Transações de metas'}
+        )
+
+        # Cria transação de saída
+        transacao.objects.create(
+            id_conta=conta_obj,
+            id_categoria=categoria_meta,
+            valor=valor,
+            data_transacao=timezone.now(),
+            descricao=f"Depósito na meta '{meta_obj.nome_meta}'",
+            tipo='saida',
+            metodo_pagamento='Transferência'
+        )
+
+        # Atualiza saldo da conta
+        conta_obj.saldo_inicial -= valor
+        conta_obj.save()
+
+        # Atualiza meta
+        meta_obj.valor_atual += valor
+        if meta_obj.valor_atual >= meta_obj.valor_objetivo:
+            meta_obj.concluida = True
+        meta_obj.save()
+
+        messages.success(request, f"R$ {valor:.2f} adicionado à meta '{meta_obj.nome_meta}' com sucesso!")
+        return redirect('financas:ver_metas', id_usuario=id_usuario)
+    
+#TODA ESTA PORRA TEM TEMPLATE AGORA

@@ -85,6 +85,11 @@
 <body>
 
 <header>
+    <a href="{% url 'financas:dashboard' %}">
+        <button>
+            ←<br>Dashboard
+        </button>
+    </a>
     <h1>{{ conta.nome_conta }}</h1>
     <a href="{% url 'financas:contas' conta.id_usuario.id_usuario %}" class="btn-voltar">Voltar</a>
 </header>

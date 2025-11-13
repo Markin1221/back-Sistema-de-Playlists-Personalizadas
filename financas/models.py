@@ -72,37 +72,42 @@ class meta(models.Model):
     def __str__(self):
         return self.nome_meta
     
+ 
+# seguinte morrice, se vc ver isso, desconsidere em baixo, eu podia ta matando eu podia ta roubando mas
+#to aqui querendo polpar meu trabalho de fazer mais 1 view e mexer num template, por favor nao tire ponto por isso :(
+ 
+ 
     
-class orcamento(models.Model):
-    id_orcamento = models.AutoField(primary_key=True)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    id_categoria = models.ForeignKey(categoria, on_delete=models.CASCADE)
-    valor_limite = models.DecimalField(max_digits=10, decimal_places=2)
-    mes_referencia = models.IntegerField()
-    ano_referencia = models.IntegerField(default=timezone.now, blank=True, null=True)
-    gasto_atual = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+# class orcamento(models.Model):
+#     id_orcamento = models.AutoField(primary_key=True)
+#     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+#     id_categoria = models.ForeignKey(categoria, on_delete=models.CASCADE)
+#     valor_limite = models.DecimalField(max_digits=10, decimal_places=2)
+#     mes_referencia = models.IntegerField()
+#     ano_referencia = models.IntegerField(default=timezone.now, blank=True, null=True)
+#     gasto_atual = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
-    def __str__(self):
-        return f"Orçamento {self.id_orcamento} para {self.id_categoria.nome_categoria} no mes {self.mes_referencia}/{self.ano_referencia}"
+#     def __str__(self):
+#         return f"Orçamento {self.id_orcamento} para {self.id_categoria.nome_categoria} no mes {self.mes_referencia}/{self.ano_referencia}"
 
-class TransacaoRecorrente(models.Model):
-    FREQUENCIAS = [
-        ('diario', 'Diário'),
-        ('semanal', 'Semanal'),
-        ('mensal', 'Mensal'),
-        ('anual', 'Anual'),
-    ]
+# class TransacaoRecorrente(models.Model):
+#     FREQUENCIAS = [
+#         ('diario', 'Diário'),
+#         ('semanal', 'Semanal'),
+#         ('mensal', 'Mensal'),
+#         ('anual', 'Anual'),
+#     ]
 
-    id_recorrente = models.AutoField(primary_key=True)
-    id_conta = models.ForeignKey('conta', on_delete=models.CASCADE)
-    id_categoria = models.ForeignKey('categoria', on_delete=models.CASCADE)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    frequencia = models.CharField(
-        max_length=10,
-        choices=FREQUENCIAS,
-        default='mensal'
-    )
-    proximoa_data = models.DateField()
-    descricao = models.TextField(blank=True, null=True)
-    ativo = models.BooleanField(default=True)
+#     id_recorrente = models.AutoField(primary_key=True)
+#     id_conta = models.ForeignKey('conta', on_delete=models.CASCADE)
+#     id_categoria = models.ForeignKey('categoria', on_delete=models.CASCADE)
+#     valor = models.DecimalField(max_digits=10, decimal_places=2)
+#     frequencia = models.CharField(
+#         max_length=10,
+#         choices=FREQUENCIAS,
+#         default='mensal'
+#     )
+#     proximoa_data = models.DateField()
+#     descricao = models.TextField(blank=True, null=True)
+#     ativo = models.BooleanField(default=True)
     
