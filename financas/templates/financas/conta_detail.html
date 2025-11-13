@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Conta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1, h2 {
+            margin: 0;
+        }
+
+        .btn-voltar {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #2980b9;
+        }
+
+        .detalhes-conta {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .detalhes-conta p {
+            margin: 0.5rem 0;
+        }
+
+        .transacoes {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 1rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>{{ conta.nome_conta }}</h1>
+    <a href="{% url 'financas:contas' conta.id_usuario.id_usuario %}" class="btn-voltar">Voltar</a>
+</header>
+
+<div class="detalhes-conta">
+    <h2>Informações da Conta</h2>
+    <p><strong>Tipo:</strong> {{ conta.tipo }}</p>
+    <p><strong>Saldo Inicial:</strong> R$ {{ conta.saldo_inicial }}</p>
+    <p><strong>Descrição:</strong> {{ conta.descriçao|default:"-" }}</p>
+    <p><strong>Data de Criação:</strong> {{ conta.data_criacao|date:"d/m/Y H:i" }}</p>
+    <p><strong>Conta de Crédito:</strong> {% if conta.e_Credito %}Sim{% else %}Não{% endif %}</p>
+    {% if conta.e_Credito %}
+        <p><strong>Limite de Crédito:</strong> R$ {{ conta.limite_credito }}</p>
+    {% endif %}
+</div>
+
+<div class="transacoes">
+    <h2>Transações</h2>
+    {% if transacoes.exists %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transacoes %}
+                    <tr>
+                        <td>{{ t.data_transacao|date:"d/m/Y H:i" }}</td>
+                        <td>{{ t.tipo }}</td>
+                        <td>{{ t.descricao|default:"-" }}</td>
+                        <td>R$ {{ t.valor }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Nenhuma transação encontrada para esta conta.</div>
+    {% endif %}
+</div>
+
+</body>
+</html>

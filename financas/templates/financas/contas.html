@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Minhas Contas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f8fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #219150;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 900px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .conta-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 0 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .conta-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        h2, p {
+            margin: 0.3rem 0;
+        }
+
+        /* === MODAL === */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            font-size: 22px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        form button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #2980b9;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Minhas Contas</h1>
+        <button id="abrirModal">+ Nova Conta</button>
+    </header>
+
+    <div class="container">
+        {% for c in contas %}
+    {% url 'financas:conta_detail' usuario.id_usuario c.id_conta as conta_url %}
+    <div class="conta-card" data-url="{{ conta_url }}">
+        <h2>{{ c.nome_conta }}</h2>
+        <p>Tipo: {{ c.tipo }}</p>
+        <p>Saldo: R$ {{ c.saldo_inicial }}</p>
+        {% if c.e_Credito %}
+            <p>Crédito: R$ {{ c.limite_credito }}</p>
+        {% endif %}
+    </div>
+{% empty %}
+    <div class="empty">Nenhuma conta criada ainda.</div>
+{% endfor %}
+
+    </div>
+
+    <!-- === MODAL === -->
+    <div id="modalConta" class="modal">
+        <div class="modal-content">
+            <span class="close" id="fecharModal">&times;</span>
+            <h2>Criar Nova Conta</h2>
+
+            <form method="post" action="{% url 'financas:criar_conta' usuario.id_usuario %}">
+                {% csrf_token %}
+                <label>Nome da Conta:</label>
+                <input type="text" name="nome_conta" required>
+
+                <label>Tipo:</label>
+                <select name="tipo" required>
+                    <option value="corrente">Corrente</option>
+                    <option value="poupanca">Poupança</option>
+                    <option value="investimento">Investimento</option>
+                </select>
+
+                <label>Saldo Inicial:</label>
+                <input type="number" step="0.01" name="saldo_inicial" required>
+
+                <label>Descrição:</label>
+                <textarea name="descricao" rows="3"></textarea>
+
+                <label>É uma conta de crédito?</label>
+                <input type="checkbox" name="e_Credito" id="e_Credito">
+
+                <label>Limite de Crédito (opcional):</label>
+                <input type="number" step="0.01" name="limite_credito" id="limite_credito">
+
+                <button type="submit">Salvar Conta</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+    document.querySelectorAll('.conta-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const url = card.dataset.url;
+            if(url) window.location.href = url;
+        });
+    });
+
+    // Modal
+    const modal = document.getElementById("modalConta");
+    const abrir = document.getElementById("abrirModal");
+    const fechar = document.getElementById("fecharModal");
+
+    abrir.onclick = () => modal.style.display = "block";
+    fechar.onclick = () => modal.style.display = "none";
+    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+</script>
+
+</body>
+</html>
