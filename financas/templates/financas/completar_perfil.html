@@ -4,39 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <title>Completar Perfil</title>
+
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f6f8fa;
-            margin: 0;
-            padding: 0;
+            display: flex;
         }
 
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem;
-            text-align: center;
+        /* SIDEBAR — SUA VERSÃO */
+        .sidebar {
+            width: 240px;
+            background: #ffffff;
+            height: 100vh;
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
-        .container {
-            max-width: 500px;
-            margin: 2rem auto;
-            background-color: white;
-            padding: 2rem;
+        .sidebar h2 {
+            font-size: 22px;
+            color: #0057ff;
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 14px;
+            margin-bottom: 6px;
             border-radius: 10px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.15);
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.25s;
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
+        .sidebar a:hover {
+            background-color: #dce8ff;
+            color: #0057ff;
+            transform: translateX(4px);
         }
+
+        .sidebar a.active {
+            background-color: #1a73ff;
+            color: white !important;
+            font-weight: 700;
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            margin-left: 240px;
+            box-sizing: border-box;
+        }
+
+        .form-box {
+            max-width: 540px;
+            margin: 32px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.08);
+        }
+
+        h2 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
 
         form label {
             display: block;
-            margin-top: 1rem;
+            margin-top: 12px;
             font-weight: bold;
         }
 
@@ -46,11 +86,11 @@
             margin-top: 6px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 1rem;
+            box-sizing: border-box;
         }
 
         form button {
-            margin-top: 1.5rem;
+            margin-top: 18px;
             width: 100%;
             padding: 12px;
             background-color: #27ae60;
@@ -61,64 +101,68 @@
             font-size: 1rem;
         }
 
-        form button:hover {
-            background-color: #219150;
-        }
+        form button:hover { background-color: #219150; }
 
-        .message {
-            margin-bottom: 1rem;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
+        .message { padding: 12px; border-radius: 6px; margin-bottom: 12px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
     </style>
 </head>
+
 <body>
-    <header>
-        <a href="{% url 'financas:dashboard' %}">
-            <button>
-                ←<br>Dashboard
-            </button>
-        </a>
-        <h1>Completar Perfil do Usuário</h1>
-    </header>
 
-    <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>DGGastos</h2>
 
-        <h2>Atualize seus dados</h2>
-        <form method="post">
-            {% csrf_token %}
-            
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" value="{{ usuario.nome }}" required>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
 
-            <label for="renda_mensal">Renda Mensal:</label>
-            <input type="number" step="0.01" id="renda_mensal" name="renda_mensal" value="{{ usuario.renda_mensal|default_if_none:'' }}">
+        <a href="{% url 'financas:gastos_categoria' request.user.id %}" class="menu-item">Ver Gastos por Categoria</a>
 
-            <label for="despesas_variaveis">Renda Variável / Despesas Variáveis:</label>
-            <input type="number" step="0.01" id="despesas_variaveis" name="despesas_variaveis" value="{{ usuario.renda_variavel|default_if_none:'0.00' }}">
+        <a href="{% url 'financas:minhas_contas' request.user.id %}" class="menu-item">Minhas Contas</a>
 
-            <button type="submit">Salvar Dados</button>
-        </form>
-    </div>
+        <a href="{% url 'financas:completar_perfil' request.user.id %}" class="menu-item active">Completar Perfil</a>
+
+        <a href="{% url 'financas:minhas_metas' request.user.id %}" class="menu-item">Minhas Metas</a>
+
+        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+
+        <a href="{% url 'financas:dashboard' %}" class="menu-item">🏠 Voltar ao Dashboard</a>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="content">
+        <div class="form-box">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <h2>Atualizar Dados</h2>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" value="{{ usuario.nome }}" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+
+                <label for="renda_mensal">Renda Mensal:</label>
+                <input type="number" step="0.01" id="renda_mensal" name="renda_mensal" value="{{ usuario.renda_mensal|default_if_none:'' }}">
+
+                <label for="despesas_variaveis">Renda Variável / Despesas Variáveis:</label>
+                <input type="number" step="0.01" id="despesas_variaveis" name="despesas_variaveis" value="{{ usuario.renda_variavel|default_if_none:'0.00' }}">
+
+                <button type="submit">Salvar Dados</button>
+            </form>
+        </div>
+    </main>
+
 </body>
 </html>

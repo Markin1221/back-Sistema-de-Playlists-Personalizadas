@@ -10,6 +10,67 @@
             background-color: #f6f8fa;
             margin: 0;
             padding: 0;
+            display: flex;
+        }
+
+        /* =====================================================
+        MENU LATERAL — PADRÃO AZUL (NOVO)
+        ===================================================== */
+        .sidebar {
+            width: 240px;
+            background: #ffffff;
+            height: 100vh;
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            color: #0057ff;
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 14px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        /* Hover azul */
+        .sidebar a:hover {
+            background-color: #dce8ff;
+            color: #0057ff;
+            transform: translateX(4px);
+        }
+
+        /* Active azul */
+        .sidebar a.active {
+            background-color: #1a73ff;
+            color: white !important;
+            font-weight: 700;
+        }
+
+        .sidebar .back-dashboard {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        /* ======= ÁREA PRINCIPAL ======= */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
@@ -107,20 +168,6 @@
             font-size: 1rem;
         }
 
-        form button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        form button:hover {
-            background-color: #2980b9;
-        }
-
         .empty {
             text-align: center;
             padding: 20px;
@@ -129,30 +176,59 @@
     </style>
 </head>
 <body>
-    <header>
-        <a href="{% url 'financas:dashboard' %}">
-            <button>
-                ←<br>Dashboard
-            </button>
-        </a>
-        <h1>Minhas Contas</h1>
-        <button id="abrirModal">+ Nova Conta</button>
-    </header>
 
-    <div class="container">
-        {% for c in contas %}
-    {% url 'financas:conta_detail' usuario.id_usuario c.id_conta as conta_url %}
-    <div class="conta-card" data-url="{{ conta_url }}">
-        <h2>{{ c.nome_conta }}</h2>
-        <p>Tipo: {{ c.tipo }}</p>
-        <p>Saldo: R$ {{ c.saldo_inicial }}</p>
-        {% if c.e_Credito %}
-            <p>Crédito: R$ {{ c.limite_credito }}</p>
-        {% endif %}
+    <!-- ======= MENU LATERAL ======= -->
+    <div class="sidebar">
+        <h2>DGGastos</h2>
+
+        <a href="{% url 'financas:gastos_gerais' usuario.id_usuario %}">Gastos Gerais</a>
+
+        <a href="{% url 'financas:gastos_categoria' usuario.id_usuario %}">
+            Ver Gastos por Categoria
+        </a>
+
+        <a href="{% url 'financas:contas' usuario.id_usuario %}" class="active">
+            Minhas Contas
+        </a>
+
+        <a href="{% url 'financas:completar_perfil' usuario.id_usuario %}">
+            Completar Perfil
+        </a>
+
+        <a href="{% url 'financas:ver_metas' usuario.id_usuario %}">
+            Minhas Metas
+        </a>
+
+        <hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">
+
+        <a href="{% url 'financas:dashboard' %}">
+            🏠 Voltar ao Dashboard
+        </a>
     </div>
-{% empty %}
-    <div class="empty">Nenhuma conta criada ainda.</div>
-{% endfor %}
+
+    <!-- ======= ÁREA PRINCIPAL ======= -->
+    <div class="content">
+
+        <header>
+            <h1>Minhas Contas</h1>
+            <button id="abrirModal">+ Nova Conta</button>
+        </header>
+
+        <div class="container">
+            {% for c in contas %}
+                {% url 'financas:conta_detail' usuario.id_usuario c.id_conta as conta_url %}
+                <div class="conta-card" data-url="{{ conta_url }}">
+                    <h2>{{ c.nome_conta }}</h2>
+                    <p>Tipo: {{ c.tipo }}</p>
+                    <p>Saldo: R$ {{ c.saldo_inicial }}</p>
+                    {% if c.e_Credito %}
+                        <p>Crédito: R$ {{ c.limite_credito }}</p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="empty">Nenhuma conta criada ainda.</div>
+            {% endfor %}
+        </div>
 
     </div>
 
@@ -164,6 +240,7 @@
 
             <form method="post" action="{% url 'financas:criar_conta' usuario.id_usuario %}">
                 {% csrf_token %}
+
                 <label>Nome da Conta:</label>
                 <input type="text" name="nome_conta" required>
 
@@ -184,31 +261,29 @@
                 <input type="checkbox" name="e_Credito" id="e_Credito">
 
                 <label>Limite de Crédito (opcional):</label>
-                <input type="number" step="0.01" name="limite_credito" id="limite_credito">
+                <input type="number" step="0.01" name="limite_credito">
 
                 <button type="submit">Salvar Conta</button>
             </form>
-
         </div>
     </div>
 
     <script>
-    document.querySelectorAll('.conta-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const url = card.dataset.url;
-            if(url) window.location.href = url;
+        document.querySelectorAll('.conta-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const url = card.dataset.url;
+                if (url) window.location.href = url;
+            });
         });
-    });
 
-    // Modal
-    const modal = document.getElementById("modalConta");
-    const abrir = document.getElementById("abrirModal");
-    const fechar = document.getElementById("fecharModal");
+        const modal = document.getElementById("modalConta");
+        const abrir = document.getElementById("abrirModal");
+        const fechar = document.getElementById("fecharModal");
 
-    abrir.onclick = () => modal.style.display = "block";
-    fechar.onclick = () => modal.style.display = "none";
-    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
-</script>
+        abrir.onclick = () => modal.style.display = "block";
+        fechar.onclick = () => modal.style.display = "none";
+        window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+    </script>
 
 </body>
 </html>

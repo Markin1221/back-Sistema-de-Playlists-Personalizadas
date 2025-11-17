@@ -5,86 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0080ff;
-            margin: 0;
-            padding: 2rem;
-        }
+ body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fb;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
 
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
+/* ===== MENU LATERAL ===== */
+.sidebar {
+    width: 240px;
+    background: #ffffff;
+    height: 100vh;
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
 
-        .main {
-            max-width: 900px;
-            margin: auto;
-        }
+.sidebar h2 {
+    font-size: 22px;
+    margin-bottom: 30px;
+    color: #0057ff;
+}
 
-        .caixa_valores, .contas, .metas {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.2s;
+}
 
-        .btn-gastos {
-            display: inline-block;
-            background-color: #3498db;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            margin-right: 10px;
-        }
+.sidebar a:hover {
+    background-color: #e9f1ff;
+}
 
-        .btn-gastos:hover {
-            background-color: #2980b9;
-        }
+.sidebar a.active {
+    background-color: #1a73ff;
+    color: white;
+}
 
-        .btn-categoria {
-            display: inline-block;
-            background-color: #2ecc71;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
+/* ===== CONTEÚDO PRINCIPAL À DIREITA ===== */
+.main {
+    margin-left: 260px; /* deixa espaço para o menu */
+    padding: 2rem;
+    width: calc(100% - 260px);
+}
 
-        .btn-categoria:hover {
-            background-color: #27ae60;
-        }
+h1, h2, h3 {
+    color: #2c3e50;
+}
 
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+/* Caixas */
+.caixa_valores, .contas, .metas {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
 
-        li {
-            padding: 6px 0;
-        }
+/* — Removi aqueles botões antigos pois agora o menu é lateral — */
+
     </style>
 </head>
 <body>
-    <div class="main">
-        <h1>Bem-vindo ao Dashboard</h1>
+    <div class="sidebar">
+    <h2>DGGastos</h2>
 
-        <!-- Botões de navegação -->
-        <div style="margin-bottom: 20px;">
+     <!-- Botões de navegação -->
+<div style="margin-bottom: 20px;"
+    style=>
             <a href="{% url 'financas:gastos_gerais' usuario.id_usuario %}" class="btn-categoria">Gastos Gerais</a>
             <a href="{% url 'financas:gastos_categoria' usuario.id_usuario %}" class="btn-categoria">Ver gastos</a>
             <a href="{% url 'financas:contas' usuario.id_usuario %}" class="btn-categoria">Minhas Contas</a>
             <a href="{% url 'financas:completar_perfil' usuario.id_usuario %}" class="btn-categoria">Completar Perfil</a>
             <a href="{% url 'financas:ver_metas' usuario.id_usuario %}" class="btn-categoria">Minhas Metas</a>
+ </div>
 
 
+    <hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">
 
-        </div>
+
+</div>
+
+    <div class="main">
+        <h1>Bem-vindo ao Dashboard</h1>
 
         <div class="caixa_valores">
             <div class="valor_renda">

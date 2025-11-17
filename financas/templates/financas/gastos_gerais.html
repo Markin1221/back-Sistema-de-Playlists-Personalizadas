@@ -4,257 +4,375 @@
 <head>
     <meta charset="UTF-8">
     <title>Gastos Gerais</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f6f8fa;
-            margin: 0;
-            padding: 0;
-        }
 
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* =====================================================
+   MENU LATERAL — PADRÃO AZUL (NOVO)
+   ===================================================== */
+.sidebar {
+    width: 240px;
+    background: #ffffff;
+    height: 100vh;
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
 
-        h1 {
-            margin: 0;
-        }
+.sidebar h2 {
+    font-size: 22px;
+    color: #0057ff;
+    margin-bottom: 25px;
+    font-weight: 800;
+}
 
-        button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
+.sidebar a {
+    display: block;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.25s;
+}
 
-        button:hover {
-            background-color: #219150;
-        }
+/* Hover azul */
+.sidebar a:hover {
+    background-color: #dce8ff;
+    color: #0057ff;
+    transform: translateX(4px);
+}
 
-        .container {
-            padding: 2rem;
-            max-width: 900px;
-            margin: auto;
-        }
+/* Active azul */
+.sidebar a.active {
+    background-color: #1a73ff;
+    color: white !important;
+    font-weight: 700;
+}
 
-        .resumo {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
-        }
+/* =====================================================
+   VARIÁVEIS E BODY
+   ===================================================== */
+:root {
+    --gutter: 28px;
+    --content-max: 1100px;
+}
 
-        .resumo h3 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-        }
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f6f8fa;
+}
 
-        .resumo p {
-            margin: 4px 0;
-            font-size: 1rem;
-        }
+/* Conteúdo principal ao lado da sidebar */
+.page-wrap {
+    margin-left: 240px;
+    padding: calc(var(--gutter) * 0.8) 32px;
+    box-sizing: border-box;
+}
 
-        .saldo-negativo {
-            color: red;
-        }
+/* =====================================================
+   HEADER
+   ===================================================== */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: calc(100% - 32px);
+    box-shadow: 0 6px 18px rgba(40,50,60,0.06);
+}
 
-        .saldo-positivo {
-            color: green;
-        }
+header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
 
-        table {
-            width: 100%;
-            background-color: white;
-            border-collapse: collapse;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
+/* Botão novo gasto */
+#abrirModal {
+    background-color: #1a73ff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: 0.2s;
+    font-weight: 600;
+}
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
+#abrirModal:hover {
+    background-color: #0059d4;
+    transform: translateY(-2px);
+}
 
-        th {
-            background-color: #2c3e50;
-            color: white;
-        }
+/* =====================================================
+   CONTAINER
+   ===================================================== */
+.container {
+    max-width: var(--content-max);
+    margin: 0 auto;
+}
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+/* =====================================================
+   RESUMO
+   ===================================================== */
+.resumo {
+    background-color: white;
+    padding: 1.4rem 1.6rem;
+    border-radius: 12px;
+    margin-bottom: 1.6rem;
+    box-shadow: 0 6px 18px rgba(40,50,60,0.05);
+}
 
-        /* === MODAL === */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 10;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
-        }
+.resumo h3 {
+    margin: 0 0 6px 0;
+    color: #2c3e50;
+}
 
-        .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-        }
+.saldo-negativo { color: #d64545; font-weight: 600; }
+.saldo-positivo { color: #2b8a3e; font-weight: 600; }
 
-        .close {
-            position: absolute;
-            right: 16px;
-            top: 12px;
-            font-size: 22px;
-            color: #333;
-            cursor: pointer;
-        }
+/* =====================================================
+   TABELA
+   ===================================================== */
+.table-wrap {
+    background: transparent;
+    border-radius: 12px;
+    overflow: hidden;
+}
 
-        form input, form select, form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 6px 18px rgba(40,50,60,0.03);
+    border-radius: 12px;
+    background-color: white;
+}
 
-        form button {
-            background-color: #3498db;
-        }
+thead th {
+    background-color: #2c3e50;
+    color: white;
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 700;
+}
+
+tbody td {
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+tbody tr + tr td {
+    border-top: 1px solid #f0f0f2;
+}
+
+tbody tr.empty-row td {
+    text-align: center;
+    padding: 18px;
+    color: #777;
+}
+
+/* =====================================================
+   MODAL
+   ===================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.55);
+}
+
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 1.8rem;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Responsividade */
+@media (max-width: 980px) {
+    .page-wrap { padding-left: 18px; padding-right: 18px; }
+    header { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+@media (max-width: 700px) {
+    .page-wrap { margin-left: 240px; padding: 12px; }
+}
+
     </style>
 </head>
 <body>
-    <header>
-        <a href="{% url 'financas:dashboard' %}">
-            <button>
-                ←<br>Dashboard
-            </button>
-        </a>
-        <h1>Gastos Gerais de {{ usuario.username }}</h1>
-        <button id="abrirModal">+ Novo Gasto</button>
-    </header>
+
+<!-- =====================================================
+     MENU LATERAL — PADRÃO NOVO
+     ===================================================== -->
+<div class="sidebar">
+    <h2>DGGastos</h2>
+
+    <a href="{% url 'financas:gastos_gerais' usuario.id_usuario %}" class="active">Gastos Gerais</a>
+    <a href="{% url 'financas:gastos_categoria' usuario.id_usuario %}">Gastos por Categoria</a>
+    <a href="{% url 'financas:contas' usuario.id_usuario %}">Minhas Contas</a>
+    <a href="{% url 'financas:completar_perfil' usuario.id_usuario %}">Completar Perfil</a>
+    <a href="{% url 'financas:ver_metas' usuario.id_usuario %}">Minhas Metas</a>
+
+    <hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">
+
+    <a href="{% url 'financas:dashboard' %}">🏠 Voltar ao Dashboard</a>
+</div>
+
+<!-- =====================================================
+     CONTEÚDO PRINCIPAL
+     ===================================================== -->
+<div class="page-wrap">
 
     <div class="container">
+
+        <header>
+            <h1>Gastos Gerais de {{ usuario.username }}</h1>
+            <button id="abrirModal">+ Novo Gasto</button>
+        </header>
+
         <div class="resumo">
             <h3>Resumo Financeiro</h3>
             <p><strong>Total de Entradas:</strong> R$ {{ total_entradas }}</p>
             <p><strong>Total de Saídas:</strong> R$ {{ total_saidas }}</p>
             <p>
-                <strong>Saldo Final:</strong> 
+                <strong>Saldo Final:</strong>
                 <span class="{% if cor_saldo == 'red' %}saldo-negativo{% else %}saldo-positivo{% endif %}">
                     R$ {{ saldo_final }}
                 </span>
             </p>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Conta</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Data</th>
-                    <th>Tipo</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in transacoes %}
+        <div class="table-wrap">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ t.id_conta.nome_conta }}</td>
-                        <td>{{ t.descricao }}</td>
-                        <td>{{ t.id_categoria.nome_categoria }}</td>
-                        <td>R$ {{ t.valor }}</td>
-                        <td>{{ t.data_transacao|date:"d/m/Y" }}</td>
-                        <td>{{ t.tipo|title }}</td>
+                        <th>Conta</th>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Data</th>
+                        <th>Tipo</th>
                     </tr>
-                {% empty %}
-                    <tr><td colspan="6" style="text-align:center;">Nenhum gasto registrado ainda.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- === MODAL === -->
-    <div id="modalGasto" class="modal">
-        <div class="modal-content">
-            <span class="close" id="fecharModal">&times;</span>
-            <h2>Novo Gasto</h2>
-
-            <form method="post" action="">
-                {% csrf_token %}
-
-                <label>Conta:</label>
-                <select name="id_conta" required>
-                    {% for conta in contas %}
-                        <option value="{{ conta.id_conta }}">{{ conta.nome_conta }}</option>
+                </thead>
+                <tbody>
+                    {% for t in transacoes %}
+                        <tr>
+                            <td>{{ t.id_conta.nome_conta }}</td>
+                            <td>{{ t.descricao }}</td>
+                            <td>{{ t.id_categoria.nome_categoria }}</td>
+                            <td>R$ {{ t.valor }}</td>
+                            <td>{{ t.data_transacao|date:"d/m/Y" }}</td>
+                            <td>{{ t.tipo|title }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr class="empty-row">
+                            <td colspan="6">Nenhum gasto registrado ainda.</td>
+                        </tr>
                     {% endfor %}
-                </select>
-
-                <label>Categoria:</label>
-                <select name="id_categoria" required>
-                    {% for c in categorias %}
-                        <option value="{{ c.id_categoria }}">{{ c.nome_categoria }}</option>
-                    {% endfor %}
-                </select>
-
-                <label>Valor:</label>
-                <input type="number" name="valor" step="0.01" required>
-
-                <label>Data:</label>
-                <input type="date" name="data_transacao" required>
-
-                <label>Descrição:</label>
-                <textarea name="descricao" rows="3"></textarea>
-
-                <label>Tipo:</label>
-                <select name="tipo">
-                    <option value="saida">Saída</option>
-                    <option value="entrada">Entrada</option>
-                </select>
-
-                <label>Método de Pagamento:</label>
-                <input type="text" name="metodo_pagamento" placeholder="Ex: Cartão, PIX, Dinheiro">
-
-                <button type="submit">Salvar Gasto</button>
-            </form>
+                </tbody>
+            </table>
         </div>
+
     </div>
+</div>
 
-    <script>
-        const modal = document.getElementById("modalGasto");
-        const abrir = document.getElementById("abrirModal");
-        const fechar = document.getElementById("fecharModal");
-        const form = document.querySelector("form");
+<!-- =====================================================
+     MODAL
+     ===================================================== -->
+<div id="modalGasto" class="modal">
+    <div class="modal-content">
+        <span class="close" id="fecharModal">&times;</span>
+        <h2>Novo Gasto</h2>
+
+        <form method="post" action="">
+            {% csrf_token %}
+
+            <label>Conta:</label>
+            <select name="id_conta" required>
+                {% for conta in contas %}
+                    <option value="{{ conta.id_conta }}">{{ conta.nome_conta }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Categoria:</label>
+            <select name="id_categoria" required>
+                {% for c in categorias %}
+                    <option value="{{ c.id_categoria }}">{{ c.nome_categoria }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Valor:</label>
+            <input type="number" name="valor" step="0.01" required>
+
+            <label>Data:</label>
+            <input type="date" name="data_transacao" required>
+
+            <label>Descrição:</label>
+            <textarea name="descricao" rows="3"></textarea>
+
+            <label>Tipo:</label>
+            <select name="tipo">
+                <option value="saida">Saída</option>
+                <option value="entrada">Entrada</option>
+            </select>
+
+            <label>Método de Pagamento:</label>
+            <input type="text" name="metodo_pagamento" placeholder="Ex: Cartão, PIX, Dinheiro">
+
+            <button type="submit" style="margin-top:10px;">Salvar Gasto</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById("modalGasto");
+    const abrir = document.getElementById("abrirModal");
+    const fechar = document.getElementById("fecharModal");
+
+    abrir.onclick = () => modal.style.display = "block";
+    fechar.onclick = () => modal.style.display = "none";
+    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+    const form = document.querySelector("#modalGasto form");
+    if (form) {
         const selectConta = form.querySelector("select[name='id_conta']");
-
-        abrir.onclick = () => modal.style.display = "block";
-        fechar.onclick = () => modal.style.display = "none";
-        window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
-
-        // Atualiza a URL de envio conforme a conta selecionada
         form.addEventListener("submit", (e) => {
             const idUsuario = "{{ usuario.id_usuario }}";
             const idConta = selectConta.value;
             form.action = `/nova_transacao/${idUsuario}/${idConta}/`;
         });
-    </script>
+    }
+</script>
+
 </body>
 </html>
