@@ -115,19 +115,19 @@
     <aside class="sidebar">
         <h2>DGGastos</h2>
 
+        <a href="{% url 'financas:gastos_gerais' usuario.id_usuario  %}" class="menu-item">Gastos Gerais</a>
 
+        <a href="{% url 'financas:gastos_categoria' usuario.id_usuario  %}" class="menu-item">Ver Gastos por Categoria</a>
 
-        <a href="{% url 'financas:gastos_categoria' request.user.id %}" class="menu-item">Ver Gastos por Categoria</a>
+        <a href="{% url 'financas:contas' usuario.id_usuario  %}" class="menu-item">Minhas Contas</a>
 
-        <a href="{% url 'financas:minhas_contas' request.user.id %}" class="menu-item">Minhas Contas</a>
+        <a href="{% url 'financas:completar_perfil' usuario.id_usuario  %}" class="menu-item active">Completar Perfil</a>
 
-        <a href="{% url 'financas:completar_perfil' request.user.id %}" class="menu-item active">Completar Perfil</a>
-
-        <a href="{% url 'financas:minhas_metas' request.user.id %}" class="menu-item">Minhas Metas</a>
+        <a href="{% url 'financas:ver_metas' usuario.id_usuario  %}" class="menu-item">Minhas Metas</a>
 
         <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
 
-        <a href="{% url 'financas:dashboard' %}" class="menu-item">🏠 Voltar ao Dashboard</a>
+        <a href="{% url 'financas:dashboard' %}" class="menu-item">Dashboard</a>
     </aside>
 
     <!-- CONTEÚDO -->

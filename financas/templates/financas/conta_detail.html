@@ -5,14 +5,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes da Conta</title>
+
     <style>
+        /* ===== SIDEBAR ===== */
+         .sidebar {
+        width: 240px;
+        background: #ffffff;
+        height: 100vh;
+        padding: 2rem 1rem;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    .sidebar h2 {
+        font-size: 22px;
+        color: #0057ff;
+        margin-bottom: 25px;
+        font-weight: 800;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 12px 14px;
+        margin-bottom: 6px;
+        border-radius: 10px;
+        font-size: 16px;
+        color: #333;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    .sidebar a:hover {
+        background-color: #dce8ff;
+        color: #0057ff;
+        transform: translateX(4px);
+    }
+
+    .sidebar a.active {
+        background-color: #1a73ff;
+        color: white !important;
+        font-weight: 700;
+    }
+        /* ===== AJUSTE DO CONTEÚDO ===== */
         body {
             font-family: Arial, sans-serif;
             background-color: #f6f8fa;
             margin: 0;
+            padding: 0;
+        }
+
+        .content {
+            margin-left: 270px; /* espaço para a sidebar */
             padding: 2rem;
         }
 
+        /* ===== HEADER ===== */
         header {
             display: flex;
             justify-content: space-between;
@@ -36,23 +86,13 @@
             background-color: #2980b9;
         }
 
-        .detalhes-conta {
+        /* ===== CARDS ===== */
+        .detalhes-conta, .transacoes {
             background-color: white;
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 0 6px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
-        }
-
-        .detalhes-conta p {
-            margin: 0.5rem 0;
-        }
-
-        .transacoes {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.1);
         }
 
         table {
@@ -84,55 +124,71 @@
 </head>
 <body>
 
-<header>
-    <a href="{% url 'financas:dashboard' %}">
-        <button>
-            ←<br>Dashboard
-        </button>
-    </a>
-    <h1>{{ conta.nome_conta }}</h1>
-    <a href="{% url 'financas:contas' conta.id_usuario.id_usuario %}" class="btn-voltar">Voltar</a>
-</header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>DGGastos</h2>
 
-<div class="detalhes-conta">
-    <h2>Informações da Conta</h2>
-    <p><strong>Tipo:</strong> {{ conta.tipo }}</p>
-    <p><strong>Saldo Inicial:</strong> R$ {{ conta.saldo_inicial }}</p>
-    <p><strong>Descrição:</strong> {{ conta.descriçao|default:"-" }}</p>
-    <p><strong>Data de Criação:</strong> {{ conta.data_criacao|date:"d/m/Y H:i" }}</p>
-    <p><strong>Conta de Crédito:</strong> {% if conta.e_Credito %}Sim{% else %}Não{% endif %}</p>
-    {% if conta.e_Credito %}
-        <p><strong>Limite de Crédito:</strong> R$ {{ conta.limite_credito }}</p>
-    {% endif %}
-</div>
+        <a href="{% url 'financas:gastos_categoria' usuario.id_usuario %}">Gastos por Categoria</a>
+        <a href="{% url 'financas:contas' usuario.id_usuario %}">Minhas Contas</a>
+        <a href="{% url 'financas:completar_perfil' usuario.id_usuario %}">Completar Perfil</a>
+        <a href="{% url 'financas:ver_metas' usuario.id_usuario %}">Minhas Metas</a>
 
-<div class="transacoes">
-    <h2>Transações</h2>
-    {% if transacoes.exists %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Tipo</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for t in transacoes %}
-                    <tr>
-                        <td>{{ t.data_transacao|date:"d/m/Y H:i" }}</td>
-                        <td>{{ t.tipo }}</td>
-                        <td>{{ t.descricao|default:"-" }}</td>
-                        <td>R$ {{ t.valor }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="empty">Nenhuma transação encontrada para esta conta.</div>
-    {% endif %}
-</div>
+        <hr style="margin:20px 0; border:0; border-top:1px solid #aaa;">
+
+        <a href="{% url 'financas:dashboard' %}">Dashboard</a>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <div class="content">
+
+        <header>
+
+            <h1>{{ conta.nome_conta }}</h1>
+
+        </header>
+        <div class="detalhes-conta">
+            <h2>Informações da Conta</h2>
+            <p><strong>Tipo:</strong> {{ conta.tipo }}</p>
+            <p><strong>Saldo Inicial:</strong> R$ {{ conta.saldo_inicial }}</p>
+            <p><strong>Descrição:</strong> {{ conta.descriçao|default:"-" }}</p>
+            <p><strong>Data de Criação:</strong> {{ conta.data_criacao|date:"d/m/Y H:i" }}</p>
+            <p><strong>Conta de Crédito:</strong> {% if conta.e_Credito %}Sim{% else %}Não{% endif %}</p>
+            {% if conta.e_Credito %}
+                <p><strong>Limite de Crédito:</strong> R$ {{ conta.limite_credito }}</p>
+            {% endif %}
+        </div>
+
+        <div class="transacoes">
+            <h2>Transações</h2>
+
+            {% if transacoes.exists %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for t in transacoes %}
+                        <tr>
+                            <td>{{ t.data_transacao|date:"d/m/Y H:i" }}</td>
+                            <td>{{ t.tipo }}</td>
+                            <td>{{ t.descricao|default:"-" }}</td>
+                            <td>R$ {{ t.valor }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">Nenhuma transação encontrada para esta conta.</div>
+            {% endif %}
+        </div>
+
+    </div> <!-- fim content -->
 
 </body>
 </html>

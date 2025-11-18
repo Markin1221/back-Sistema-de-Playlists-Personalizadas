@@ -19,7 +19,7 @@
     background: #ffffff;
     height: 100vh;
     padding: 2rem 1rem;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     position: fixed;
     top: 0;
     left: 0;
@@ -27,32 +27,36 @@
 
 .sidebar h2 {
     font-size: 22px;
-    margin-bottom: 30px;
     color: #0057ff;
+    margin-bottom: 25px;
+    font-weight: 800;
 }
 
 .sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: block;
     padding: 12px 14px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border-radius: 10px;
     font-size: 16px;
     color: #333;
     text-decoration: none;
-    transition: 0.2s;
+    font-weight: 600;
+    transition: 0.25s;
 }
 
+/* Hover azul */
 .sidebar a:hover {
-    background-color: #e9f1ff;
+    background-color: #dce8ff;
+    color: #0057ff;
+    transform: translateX(4px);
 }
 
+/* Active azul */
 .sidebar a.active {
     background-color: #1a73ff;
-    color: white;
+    color: white !important;
+    font-weight: 700;
 }
-
 /* ===== CONTEÚDO PRINCIPAL À DIREITA ===== */
 .main {
     margin-left: 260px; /* deixa espaço para o menu */
