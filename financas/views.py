@@ -268,52 +268,36 @@ class gastosGeraisview(View):
         })
 
 #esta porra tem template
-
 class gastosCategoriaView(View):
     def get(self, request, id_usuario):
         usuario = get_usuario_logado(request)
         if not usuario or usuario.id_usuario != id_usuario:
             return redirect("financas:login_cadastro")
 
-        # Busca todas as categorias do usuário
         categorias = categoria.objects.filter(id_usuario=usuario)
 
-        # Se o usuário não tiver categorias ainda
-        if not categorias.exists():
-            contexto = {
-                'usuario': usuario,
-                'categorias': [],
-            }
-            return render(request, 'financas/gastos_categoria.html', contexto)
-
-        # Monta os dados de cada categoria
         categorias_dados = []
         for cat in categorias:
             transacoes = transacao.objects.filter(id_categoria=cat)
-            total_gastos = transacoes.filter(tipo='saida').aggregate(total=Sum('valor'))['total'] or 0
-            total_entradas = transacoes.filter(tipo='entrada').aggregate(total=Sum('valor'))['total'] or 0
+            total = transacoes.aggregate(total=Sum('valor'))['total'] or 0
 
             categorias_dados.append({
-                'nome': cat.nome_categoria,  # <-- usa o campo real do seu model
-                'descricao': getattr(cat, 'descricao', ''),  # evita erro se o campo não existir
-                'total_gastos': total_gastos,
-                'total_entradas': total_entradas,
+                'id': cat.id_categoria,
+                'nome': cat.nome_categoria,
+                'descricao': cat.descricao,
+                'total': total
             })
 
         contexto = {
             'usuario': usuario,
-            'categorias': categorias_dados,
+            'categorias': categorias_dados
         }
+
         return render(request, 'financas/gastos_categoria.html', contexto)
+
 #esta porra tem template
 
 class CriarCategoriaView(View):
-    def get(self, request):
-        usuario = get_usuario_logado(request)
-        if not usuario:
-            return redirect("financas:login_cadastro")
-        return render(request, 'financas/criar_categoria.html')
-
     def post(self, request):
         usuario = get_usuario_logado(request)
         if not usuario:
@@ -328,12 +312,13 @@ class CriarCategoriaView(View):
 
         categoria.objects.create(
             id_usuario=usuario,
-            nome=nome,
+            nome_categoria=nome,   # ← CORRETO
             descricao=descricao
         )
 
         messages.success(request, f"Categoria '{nome}' criada com sucesso!")
-        return redirect('financas:gastos_gerais', id_usuario=usuario.id_usuario) 
+        return redirect('financas:gastos_categoria', id_usuario=usuario.id_usuario)
+
 #esta porra tem template    
 
 class complementoUsuarioView(View):
