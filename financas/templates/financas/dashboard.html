@@ -111,27 +111,21 @@ h1, h2, h3 {
             </div>
             <div class="valor_saldo">
                 <h3>Saldo das Contas</h3>
-                <p>R$ {{ total_saldo }}</p>
+                <p>R$ {{ total_saldo|floatformat:2 }}</p>
             </div>
 
-            {% for transacao in transacoes %}
-                <div>
-                    <h3>Total de Transações</h3>
-                    <p>{{ transacao.valor }}</p>
-                </div>
-            {% empty %}
-                <div>
-                    <h3>Total de Transações</h3>
-                    <p>0</p>
-                </div>
-            {% endfor %}
+            <div>
+                <h3>Total das Últimas Transações</h3>
+                <p>R$ {{ total_transacoes|floatformat:2 }}</p>
+            </div>
+
         </div>
 
         <div class="contas">
             <h2>Minhas Contas</h2>
             <ul>
                 {% for conta in contas %}
-                    <li>{{ conta.nome }} - Saldo: R$ {{ conta.saldo }}</li>
+                    <li>{{ conta.nome_conta }} - Saldo: R$ {{ conta.saldo_inicial|floatformat:2 }}</li>
                 {% empty %}
                     <li>Nenhuma conta cadastrada.</li>
                 {% endfor %}

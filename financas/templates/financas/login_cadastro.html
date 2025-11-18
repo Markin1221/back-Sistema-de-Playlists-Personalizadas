@@ -1,46 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
+    <title>DGGastos • Login</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #c8d8ff, #f2f4ff, #c8e3ff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ===== TÍTULO DO SISTEMA ===== */
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            text-align: center;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 40px;
+            font-weight: 900;
+            color: #1a73ff;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-container p {
+            font-size: 16px;
+            color: #3a3a3a;
+            margin-top: 6px;
+        }
+
+        /* ===== ANIMAÇÃO ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== CONTAINER QUE GIRA ===== */
+        .flip-container {
+            width: 360px;
+            height: 420px;
+            perspective: 1200px;
+            animation: pop 0.6s ease;
+        }
+
+        .flipper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s ease;
+            transform-style: preserve-3d;
+        }
+
+        .flip-container.cadastro .flipper {
+            transform: rotateY(180deg);
+        }
+
+        /* ==== CARDS (frente e trás) ==== */
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 18px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card label {
+            font-weight: bold;
+            margin-top: 12px;
+            color: #2c3e50;
+        }
+
+        .card input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #d4d7dd;
+            border-radius: 6px;
+            background: #fafbff;
+        }
+
+        .card button {
+            margin-top: 18px;
+            width: 100%;
+            padding: 12px;
+            background-color: #1a73ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .card button:hover {
+            background-color: #0057ff;
+        }
+
+        /* TRÁS DO CARD */
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        /* Link para trocar */
+        .toggle-link {
+            margin-top: 14px;
+            text-align: center;
+            color: #1a73ff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 <body>
-    
-    <div>
-        <form action="{% url 'financas:login_cadastro' %}" method="post">
-            {% csrf_token %}
-            <h3>Login</h3>
 
-            <label>email:</label>
-            <input type="text" name="email">
-
-            <label>Senha:</label>
-            <input type="password" name="senha">
-
-            <button type="submit" name="acao" value="login">Entrar</button>
-        </form>
-
+    <!-- LOGO E TÍTULO -->
+    <div class="logo-container">
+        <h1>DGGastos</h1>
+        <p>Organize sua vida financeira com inteligência</p>
     </div>
 
-    <!-- essa parte de cima é o login-->
-     <div>
-        <form action="{% url 'financas:login_cadastro' %}" method="post">
-            {% csrf_token %}
-            <h3>cadastrar</h3>
-            
-            <label>Nome:</label>
-            <input type="text" name="nome_cadastro">
+    <div class="flip-container" id="flip">
+        <div class="flipper">
 
-            <label>E-mail:</label>
-            <input type="email" name="email_cadastro">
+            <!-- LOGIN (frente) -->
+            <div class="card front">
+                <form action="{% url 'financas:login_cadastro' %}" method="post">
+                    {% csrf_token %}
+                    <h3>Login</h3>
 
-            <label>Senha:</label>
-            <input type="password" name="senha_cadastro">
+                    <label>Email:</label>
+                    <input type="text" name="email">
 
-            <button type="submit" name="acao" value="cadastro">Cadastrar</button>
-        </form>
-     </div>
-     
+                    <label>Senha:</label>
+                    <input type="password" name="senha">
+
+                    <button type="submit" name="acao" value="login">Entrar</button>
+
+                    <div class="toggle-link" onclick="mostrarCadastro()">
+                        Criar uma conta
+                    </div>
+                </form>
+            </div>
+
+            <!-- CADASTRO (trás) -->
+            <div class="card back">
+                <form action="{% url 'financas:login_cadastro' %}" method="post">
+                    {% csrf_token %}
+                    <h3>Cadastrar</h3>
+
+                    <label>Nome:</label>
+                    <input type="text" name="nome_cadastro">
+
+                    <label>E-mail:</label>
+                    <input type="email" name="email_cadastro">
+
+                    <label>Senha:</label>
+                    <input type="password" name="senha_cadastro">
+
+                    <button type="submit" name="acao" value="cadastro">Cadastrar</button>
+
+                    <div class="toggle-link" onclick="mostrarLogin()">
+                        Já tenho conta
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function mostrarCadastro() {
+            document.getElementById("flip").classList.add("cadastro");
+        }
+
+        function mostrarLogin() {
+            document.getElementById("flip").classList.remove("cadastro");
+        }
+    </script>
+
 </body>
 </html>

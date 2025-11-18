@@ -88,12 +88,14 @@ class dashBoardView(View):
         total_saldo = contas.aggregate(total=Sum('saldo_inicial'))['total'] or 0
         total_renda = (usuario.renda_mensal or Decimal(0)) + (usuario.renda_variavel or Decimal(0))
         categorias = categoria.objects.filter(id_usuario=usuario)
+        total_transacoes = transacoes.aggregate(total=Sum('valor'))['total'] or 0
 
         contexto = {
             'usuario': usuario_obj,
             'contas': contas,
             'metas': metas,
-            'ultimas_transacoes': transacoes,
+            'transacoes': transacoes,
+            'total_transacoes': total_transacoes,
             'total_saldo': total_saldo,
             'total_renda': total_renda,
             'categorias': categorias,
